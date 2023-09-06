@@ -9,24 +9,21 @@ Grid grid;
 
 int main()
 {
-	InitWindow( 800, 450, "C-Sweeper" );
-	
-	grid = Grid::Grid( Difficulty::Beginner );
+	// Initialize window.
+	InitWindow( 800, 450, "cpp-sweeper" );
+	SetTargetFPS( TARGET_FRAMERATE );
 
+	grid = Grid::Grid( Difficulty::Intermediate );
+	grid.reveal( 5, 5 );
+
+	// Do rendering and updates.
 	while ( !WindowShouldClose() )
 	{
 		BeginDrawing();
 		ClearBackground( RAYWHITE );
-		
-		DrawText( "nothing to see here, yet..", 50, 50, 20, LIGHTGRAY );
-		DrawFPS( 10, 10 );
-
 		grid.render();
-
+		DrawFPS( 10, 10 );
 		EndDrawing();
-
-		// Delay to aim for target framerate.
-		WaitTime( 1.0 / TARGET_FRAMERATE );
 	}
 
 	CloseWindow();
