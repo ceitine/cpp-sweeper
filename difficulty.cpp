@@ -1,4 +1,4 @@
-#include "vec2i.cpp"
+#include "structs.cpp"
 
 enum Difficulty
 {
@@ -23,6 +23,10 @@ static int getBombCount( Difficulty difficulty )
 	case Difficulty::Expert:
 		return 99;
 		break;
+
+	default:
+		throw "Incorrect difficulty.";
+		break;
 	}
 }
 
@@ -40,6 +44,10 @@ static Vec2I getGridSize( Difficulty difficulty )
 
 	case Difficulty::Expert:
 		return { 30, 16 };
+		break;
+
+	default:
+		throw "Incorrect difficulty.";
 		break;
 	}
 }
