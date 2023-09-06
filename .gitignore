@@ -1,0 +1,7 @@
+*.vcxproj*
+.vs/*
+c-sweeper.sln
+packages/*
+x86/*
+x64/*
+.editorconfig
