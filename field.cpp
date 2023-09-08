@@ -18,6 +18,24 @@ static const Color colors[8] =
 	GRAY
 };
 
+static const Texture2D* gridTex;
+static const Texture2D* emptyTex;
+static const Texture2D* flagTex;
+static const Texture2D* mineTex;
+
+static void init()
+{
+	gridTex = new Texture2D( LoadTexture( "assets/grid.png" ) );
+	emptyTex = new Texture2D( LoadTexture( "assets/grid_empty.png" ) );
+	flagTex = new Texture2D( LoadTexture( "assets/flag.png" ) );
+	mineTex = new Texture2D( LoadTexture( "assets/mine.png" ) );
+
+	SetTextureFilter( *gridTex, TEXTURE_FILTER_POINT );
+	SetTextureFilter( *emptyTex, TEXTURE_FILTER_POINT );
+	SetTextureFilter( *flagTex, TEXTURE_FILTER_POINT );
+	SetTextureFilter( *mineTex, TEXTURE_FILTER_POINT );
+}
+
 class Field
 {
 public:
@@ -28,16 +46,6 @@ public:
 		this->size = getGridSize( difficulty );
 		this->difficulty = difficulty;
 		this->tiles = std::vector<Tile*>( size.x * size.y );
-
-		gridTex = LoadTexture( "assets/grid.png" );
-		emptyTex = LoadTexture( "assets/grid_empty.png" );
-		flagTex = LoadTexture( "assets/flag.png" );
-		mineTex = LoadTexture( "assets/mine.png" );
-
-		SetTextureFilter( gridTex, TEXTURE_FILTER_POINT );
-		SetTextureFilter( emptyTex, TEXTURE_FILTER_POINT );
-		SetTextureFilter( flagTex, TEXTURE_FILTER_POINT );
-		SetTextureFilter( mineTex, TEXTURE_FILTER_POINT );
 
 		generate();
 	}
@@ -77,11 +85,11 @@ public:
 				// If we haven't revealed tile, we should just draw it as "hidden".
 				if ( !tile->revealed )
 				{
-					DrawTextureEx( gridTex, pos, 0, size / 16, WHITE );
+					DrawTextureEx( *gridTex, pos, 0, size / 16, WHITE );
 
 					if ( tile->type == Mine )
 					{
-						DrawTextureEx( mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
+						DrawTextureEx( *mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
 					}
 
 					// Set position.
@@ -95,7 +103,7 @@ public:
 				switch ( tile->type )
 				{
 				case TileType::Empty:
-					DrawTextureEx( emptyTex, pos, 0, size / 16, WHITE );
+					DrawTextureEx( *emptyTex, pos, 0, size / 16, WHITE );
 
 					if ( tile->value > 0 )
 					{
@@ -108,12 +116,12 @@ public:
 					break;
 
 				case TileType::Mine:
-					DrawTextureEx( mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
+					DrawTextureEx( *mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
 
 					break;
 
 				case TileType::Flag:
-					DrawTextureEx( flagTex, pos, 0, size / 16, WHITE );
+					DrawTextureEx( *flagTex, pos, 0, size / 16, WHITE );
 
 					break;
 				}
@@ -180,11 +188,6 @@ private:
 	Vec2I size;
 	Difficulty difficulty;
 	int bombCount;
-
-	Texture gridTex;
-	Texture emptyTex;
-	Texture flagTex;
-	Texture mineTex;
 
 	int calculateMines( int x, int y )
 	{

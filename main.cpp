@@ -11,8 +11,13 @@ int main()
 {
 	// Initialize window.
 	InitWindow( 800, 600, "cpp-sweeper" );
+	SetWindowIcon( LoadImage( "assets/mine.png" ) );
 	SetTargetFPS( TARGET_FRAMERATE );
+
+	// Load the textures.
+	init();
 	
+	// Initilize a field.
 	field = new Field( Difficulty::Intermediate );
 	field->reveal( 5, 5 );
 
@@ -21,6 +26,13 @@ int main()
 	{
 		BeginDrawing();
 		ClearBackground( RAYWHITE );
+		if ( IsKeyDown( KEY_ENTER ) )
+		{
+			delete field;
+			field = new Field( Difficulty::Intermediate );
+			field->reveal( 5, 5 );
+		}
+
 		Vec2I size = field->render( 605, 600 );
 		DrawFPS( 10, 10 );
 		EndDrawing();
