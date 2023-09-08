@@ -27,6 +27,7 @@ int main()
 	}
 
 	CloseWindow();
+	delete field;
 
 	return 0;
 }

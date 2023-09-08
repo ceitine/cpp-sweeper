@@ -42,12 +42,11 @@ public:
 		generate();
 	}
 	
-	void discard()
+	~Field()
 	{
+		// Free tile pointers from our tile vector.
 		for ( Tile* tile : this->tiles )
 			delete tile;
-
-		delete this;
 	}
 
 	Vec2I render( int width, int height )
