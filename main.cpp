@@ -1,45 +1,29 @@
 #include "raylib.h"
-#include "field.cpp"
-#include <string>
-
-// Most likely don't need any more than 30 frames per second.
-static const int TARGET_FRAMERATE = 30;
-
-Field* field = nullptr;
+#include "gui.h"
+#include "gamestate.h"
+#include "constants.h"
 
 int main()
 {
 	// Initialize window.
-	InitWindow( 800, 600, "cpp-sweeper" );
+	InitWindow( WINDOW_WIDTH, WINDOW_HEIGHT, "Minesweeper" );
 	SetWindowIcon( LoadImage( "assets/mine.png" ) );
 	SetTargetFPS( TARGET_FRAMERATE );
 
 	// Load the textures.
-	init();
+	init_gui();
 	
-	// Initilize a field.
-	field = new Field( Difficulty::Intermediate );
-	field->reveal( 5, 5 );
-
 	// Do rendering and updates.
 	while ( !WindowShouldClose() )
 	{
 		BeginDrawing();
 		ClearBackground( RAYWHITE );
-		if ( IsKeyDown( KEY_ENTER ) )
-		{
-			delete field;
-			field = new Field( Difficulty::Intermediate );
-			field->reveal( 5, 5 );
-		}
-
-		Vec2I size = field->render( 605, 600 );
+		render_state();
 		DrawFPS( 10, 10 );
 		EndDrawing();
 	}
 
 	CloseWindow();
-	delete field;
 
 	return 0;
 }

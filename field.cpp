@@ -1,10 +1,12 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
-#include "raylib.h"
-#include "tile.cpp"
-#include "difficulty.cpp"
 #include <string>
+#include "raylib.h"
+#include "tile.h"
+#include "gui.h"
+#include "difficulty.h"
+#include "gamestate.h"
 
 static const Color colors[8] =
 {
@@ -17,24 +19,6 @@ static const Color colors[8] =
 	BLACK,
 	GRAY
 };
-
-static const Texture2D* gridTex;
-static const Texture2D* emptyTex;
-static const Texture2D* flagTex;
-static const Texture2D* mineTex;
-
-static void init()
-{
-	gridTex = new Texture2D( LoadTexture( "assets/grid.png" ) );
-	emptyTex = new Texture2D( LoadTexture( "assets/grid_empty.png" ) );
-	flagTex = new Texture2D( LoadTexture( "assets/flag.png" ) );
-	mineTex = new Texture2D( LoadTexture( "assets/mine.png" ) );
-
-	SetTextureFilter( *gridTex, TEXTURE_FILTER_POINT );
-	SetTextureFilter( *emptyTex, TEXTURE_FILTER_POINT );
-	SetTextureFilter( *flagTex, TEXTURE_FILTER_POINT );
-	SetTextureFilter( *mineTex, TEXTURE_FILTER_POINT );
-}
 
 class Field
 {
@@ -85,11 +69,11 @@ public:
 				// If we haven't revealed tile, we should just draw it as "hidden".
 				if ( !tile->revealed )
 				{
-					DrawTextureEx( *gridTex, pos, 0, size / 16, WHITE );
+					DrawTextureEx( gridTex, pos, 0, size / 16, WHITE );
 
 					if ( tile->type == Mine )
 					{
-						DrawTextureEx( *mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
+						DrawTextureEx( mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
 					}
 
 					// Set position.
@@ -103,25 +87,25 @@ public:
 				switch ( tile->type )
 				{
 				case TileType::Empty:
-					DrawTextureEx( *emptyTex, pos, 0, size / 16, WHITE );
+					DrawTextureEx( emptyTex, pos, 0, size / 16, WHITE );
 
 					if ( tile->value > 0 )
 					{
 						std::string text = std::to_string( tile->value );
+						Vector2 strSize = MeasureTextEx( myFont, text.c_str(), 25, 0 );
 
-						DrawText( text.c_str(), x + 6, y + 6, w / 2, BLACK );
-						DrawText( text.c_str(), x + 5, y + 5, w / 2, colors[tile->value] );
+						draw_string( text.c_str(), Vector2 { x + size / 2 - strSize.x / 2, y + size / 2 - strSize.y / 2 }, colors[tile->value], 25 );
 					}
 
 					break;
 
 				case TileType::Mine:
-					DrawTextureEx( *mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
+					DrawTextureEx( mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
 
 					break;
 
 				case TileType::Flag:
-					DrawTextureEx( *flagTex, pos, 0, size / 16, WHITE );
+					DrawTextureEx( flagTex, pos, 0, size / 16, WHITE );
 
 					break;
 				}
@@ -152,9 +136,10 @@ public:
 		if ( tile->revealed || tile->type == Flag )
 			return;
 
+		// Whoops.. We lost.
 		if ( tile->type == Mine )
 		{
-			// todo: game over screen
+			set_state( GameState::Loss );
 			return;
 		}
 
@@ -165,7 +150,7 @@ public:
 		// Check if we have revealed everything we can.
 		if ( this->revealed == this->tiles.size() - bombCount )
 		{
-			// todo: show win screen.
+			set_state( GameState::Win );
 			return;
 		}
 

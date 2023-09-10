@@ -1,13 +1,14 @@
-#include "structs.cpp"
+#pragma once
+#include "vec2i.h"
 
 enum Difficulty
 {
-	Beginner = 0,
+	Beginner,
 	Intermediate,
 	Expert
 };
 
-
+// These values are taken from a random google search result. lol
 static int getBombCount( Difficulty difficulty )
 {
 	switch ( difficulty )
@@ -44,6 +45,28 @@ static Vec2I getGridSize( Difficulty difficulty )
 
 	case Difficulty::Expert:
 		return { 30, 16 };
+		break;
+
+	default:
+		throw "Incorrect difficulty.";
+		break;
+	}
+}
+
+static Vec2I getWindowSize( Difficulty difficulty )
+{
+	switch ( difficulty )
+	{
+	case Difficulty::Beginner:
+		return { 500, 550 };
+		break;
+
+	case Difficulty::Intermediate:
+		return { 600, 650 };
+		break;
+
+	case Difficulty::Expert:
+		return { 850, 550 };
 		break;
 
 	default:

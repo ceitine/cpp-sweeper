@@ -5,3 +5,4 @@ packages/*
 x86/*
 x64/*
 .editorconfig
+cpp-sweeper.sln
