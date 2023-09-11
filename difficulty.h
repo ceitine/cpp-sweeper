@@ -66,7 +66,7 @@ static Vec2I getWindowSize( Difficulty difficulty )
 		break;
 
 	case Difficulty::Expert:
-		return { 850, 550 };
+		return { 900, 520 };
 		break;
 
 	default:

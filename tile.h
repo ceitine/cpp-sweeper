@@ -1,29 +1,25 @@
 #pragma once
 #include <cstdint>
 
-enum TileType
+enum TileState
 {
-	Empty,
-	Flag,
-	Mine
+	None,
+	Flagged
 };
 
 struct Tile
 {
 public:
 	bool revealed;
+	bool isMine;
 	uint8_t value;
-	TileType type;
+	TileState state;
 
 	Tile()
 	{
-		this->type = Empty;
+		this->state = None;
 		this->revealed = false;
+		this->isMine = false;
 		this->value = 0;
-	}
-
-	Tile( TileType type ) : Tile()
-	{
-		this->type = type;
 	}
 };

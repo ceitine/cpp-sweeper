@@ -11,6 +11,6 @@ extern Font myFont;
 
 void init_gui();
 
-void draw_string( const char* text, Vector2 pos, Color color, int fontSize = 20, float rotation = 0 );
+void draw_string( const char* text, Vector2 pos, Color color, int fontSize = 20 );
 bool mouse_in_rect( int x, int y, int w, int h );
 void render_button( const char* text, Rectangle rect, void (*onclick)() = nullptr, int fontSize = 26 );

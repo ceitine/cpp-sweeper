@@ -10,16 +10,16 @@ int main()
 	SetWindowIcon( LoadImage( "assets/mine.png" ) );
 	SetTargetFPS( TARGET_FRAMERATE );
 
-	// Load the textures.
+	// Initialize everything.
 	init_gui();
+	set_state( GameState::Menu );
 	
 	// Do rendering and updates.
 	while ( !WindowShouldClose() )
 	{
 		BeginDrawing();
-		ClearBackground( RAYWHITE );
+		ClearBackground( LIGHTGRAY );
 		render_state();
-		DrawFPS( 10, 10 );
 		EndDrawing();
 	}
 

@@ -1,9 +1,9 @@
 #include "gui.h"
 #include <iostream>
 
-static Color BUTTON_BORDER = { 200, 200, 200 };
-static Color BUTTON_BACK = { 210, 210, 210 };
-static int BORDER_WIDTH = 2;
+const Color BUTTON_BORDER = { 155, 155, 155, 255 };
+const Color BUTTON_BACK = { 210, 210, 210, 255 };
+const int BORDER_WIDTH = 1;
 
 Texture2D gridTex;
 Texture2D emptyTex;
@@ -30,7 +30,7 @@ void init_gui()
 	myFont = LoadFont( "assets/font.ttf" );
 }
 
-void draw_string( const char* text, Vector2 pos, Color color, int fontSize, float rotation )
+void draw_string( const char* text, Vector2 pos, Color color, int fontSize )
 {
 	DrawTextEx( myFont, text, Vector2{ 1 + pos.x, 1 + pos.y }, fontSize, 0, BLACK );
 	DrawTextEx( myFont, text, pos, fontSize, 0, color );
@@ -49,7 +49,7 @@ void render_button( const char* text, Rectangle rect, void (*onclick)(), int fon
 	if ( hovered )
 	{
 		// Call onclick...
-		if ( IsMouseButtonPressed( MOUSE_BUTTON_LEFT ) && onclick != nullptr )
+		if ( IsMouseButtonReleased( MOUSE_BUTTON_LEFT ) && onclick != nullptr )
 			onclick();
 	}
 

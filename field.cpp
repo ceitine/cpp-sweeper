@@ -24,6 +24,7 @@ class Field
 {
 public:
 	int revealed;
+	Vec2I size;
 
 	Field( Difficulty difficulty )
 	{
@@ -41,21 +42,17 @@ public:
 			delete tile;
 	}
 
-	Vec2I render( int width, int height )
+	void render( Vector2 pos, float size )
 	{
-		int w = width / this->size.x;
-		int h = height / this->size.y;
-		float size = w > h ? h : w;
-
 		float bombScale = size / 16 * 0.75;
 
-		float x = 0;
-		float y = 0;
+		float x = pos.x;
+		float y = pos.y;
 
 		// Go through all tiles.
 		for ( int j = 0; j < this->size.y; j++ )
 		{
-			x = 0;
+			x = pos.x;
 
 			for ( int i = 0; i < this->size.x; i++ )
 			{
@@ -64,61 +61,64 @@ public:
 				if ( tile == nullptr )
 					continue;
 
-				Vector2 pos = Vector2{ x, y };
+				// Get position.
+				x = pos.x + i * size;
+				y = pos.y + j * size;
+				Vector2 position = Vector2{ x, y };
 
 				// If we haven't revealed tile, we should just draw it as "hidden".
 				if ( !tile->revealed )
 				{
-					DrawTextureEx( gridTex, pos, 0, size / 16, WHITE );
+					DrawTextureEx( gridTex, position, 0, size / 16, WHITE );
 
-					if ( tile->type == Mine )
-					{
-						DrawTextureEx( mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
-					}
-
-					// Set position.
-					x = i * size;
-					y = j * size;
+					if ( tile->state == TileState::Flagged )
+						DrawTextureEx( flagTex, position, 0, size / 16, WHITE );
 
 					continue;
 				}
 
 				// If we are revealed, everything should draw differently.
-				switch ( tile->type )
+				if ( !tile->isMine )
 				{
-				case TileType::Empty:
-					DrawTextureEx( emptyTex, pos, 0, size / 16, WHITE );
+					DrawTextureEx( emptyTex, position, 0, size / 16, WHITE );
 
 					if ( tile->value > 0 )
 					{
+						float scale = size / 1.5f;
 						std::string text = std::to_string( tile->value );
-						Vector2 strSize = MeasureTextEx( myFont, text.c_str(), 25, 0 );
+						Vector2 strSize = MeasureTextEx( myFont, text.c_str(), scale, 0 );
 
-						draw_string( text.c_str(), Vector2 { x + size / 2 - strSize.x / 2, y + size / 2 - strSize.y / 2 }, colors[tile->value], 25 );
+						draw_string( text.c_str(), Vector2{ x + size / 2 - strSize.x / 2, y + size / 2 - strSize.y / 2 }, colors[tile->value], scale );
 					}
 
-					break;
-
-				case TileType::Mine:
-					DrawTextureEx( mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
-
-					break;
-
-				case TileType::Flag:
-					DrawTextureEx( flagTex, pos, 0, size / 16, WHITE );
-
-					break;
+					continue;
 				}
 
-				// Increment on x-axis.
-				x += size;
+				// Draw mines when revealed.
+				DrawTextureEx( mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
 			}
-
-			// Increment on y-axis.
-			y += size;
 		}
+	}
 
-		return { (int)x, (int)y };
+	void toggle_flag( int x, int y )
+	{
+		// Check if we are out of bounds.
+		if ( x >= size.x || y >= size.y
+		  || x < 0 || y < 0 ) return;
+
+		// Ignore if we have a revealed tile or a flag.
+		int index = getIndex( x, y );
+		if ( index >= size.x * size.y )
+			return;
+
+		Tile* tile = tiles[index];
+		if ( tile->revealed )
+			return;
+
+		// Toggle the flag.
+		tile->state = tile->state == TileState::Flagged
+			? TileState::None
+			: TileState::Flagged;
 	}
 
 	void reveal( int x, int y )
@@ -133,11 +133,11 @@ public:
 			return;
 
 		Tile* tile = tiles[index];
-		if ( tile->revealed || tile->type == Flag )
+		if ( tile->revealed || tile->state == TileState::Flagged )
 			return;
 
 		// Whoops.. We lost.
-		if ( tile->type == Mine )
+		if ( tile->isMine )
 		{
 			set_state( GameState::Loss );
 			return;
@@ -170,7 +170,6 @@ public:
 
 private:
 	std::vector<Tile*> tiles;
-	Vec2I size;
 	Difficulty difficulty;
 	int bombCount;
 
@@ -188,7 +187,7 @@ private:
 			int index = getIndex( i, j );
 			Tile* tile = tiles[index];
 
-			if ( tile->type == Mine )
+			if ( tile->isMine )
 				count++;
 		}
 
@@ -203,17 +202,17 @@ private:
 		// Fill with empty grids.
 		for ( int y = 0; y < size.y; y++ )
 		for ( int x = 0; x < size.x; x++ )
-			tiles[getIndex( x, y )] = new Tile{ Empty };
+			tiles[getIndex( x, y )] = new Tile();
 
 		// Fill grid with bombs.
 		while ( bombs > 0 )
 		{
 			int index = getIndex( rand() % size.x, rand() % size.y );
 			Tile* tile = tiles[index];
-			if ( tile->type == TileType::Mine )
+			if ( tile->isMine )
 				continue;
 
-			tile->type = Mine;
+			tile->isMine = true;
 			bombs--;
 		}
 	}
