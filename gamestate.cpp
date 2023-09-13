@@ -29,7 +29,7 @@ void set_state( GameState to )
 		window_size = getWindowSize( difficulty );
 	}
 
-	// Delete field and rset size to default.
+	// Delete field and reset size to default.
 	else if ( to == GameState::Menu )
 	{
 		splash = splashes[rand() % (sizeof( splashes ) / sizeof( splashes[0] ))];
