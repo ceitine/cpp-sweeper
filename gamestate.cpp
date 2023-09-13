@@ -5,7 +5,7 @@
 #include "field.cpp"
 
 static GameState state = GameState::Menu;
-static Difficulty difficulty = Difficulty::Beginner;
+static Difficulty difficulty = Difficulty::Intermediate;
 static Vec2I window_size;
 
 static std::string splashes[] =
@@ -64,12 +64,12 @@ void render_game()
 		return;
 
 	float padding = 10;
-	int w = (window_size.x - padding * 2) / field->size.x;
-	int h = (window_size.y - padding * 2) / field->size.y;
+	float w = (window_size.x - padding * 2) / field->size.x;
+	float h = (window_size.y - padding * 2) / field->size.y;
 	float size = w > h ? h : w;
 
 	Vector2 fieldSize = { field->size.x * size, field->size.y * size };
-	Vector2 fieldPos = { padding, window_size.y - fieldSize.y - padding };
+	Vector2 fieldPos = { (int)padding, (int)(window_size.y - fieldSize.y - padding) };
 	DrawRectangle( fieldPos.x - 2, fieldPos.y - 2, fieldSize.x + 4, fieldSize.y + 4, BLACK );
 	field->render( fieldPos, size );
 
@@ -83,8 +83,8 @@ void render_game()
 	};
 
 	// Check if we are within our field bounds.
-	if ( grid.x < 0 || grid.x > fieldSize.x
-	  && grid.y < 0 || grid.y > fieldSize.y ) return;
+	if ( grid.x < 0 || grid.x >= field->size.x
+	  || grid.y < 0 || grid.y >= field->size.y ) return;
 
 	draw_string( TextFormat( "%i, %i", grid.x, grid.y ), { 10, 10 }, RED, 25 );
 
