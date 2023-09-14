@@ -47,12 +47,12 @@ public:
 		float bombScale = size / 16 * 0.75;
 
 		// Go through all tiles.
-		for (int j = 0; j < this->size.y; j++)
-		for (int i = 0; i < this->size.x; i++)
+		for ( int j = 0; j < this->size.y; j++ )
+		for ( int i = 0; i < this->size.x; i++ )
 		{
 			int index = getIndex(i, j);
 			Tile* tile = tiles[index];
-			if (tile == nullptr)
+			if ( tile == nullptr )
 				continue;
 		
 			// Get position.
@@ -61,35 +61,35 @@ public:
 			Vector2 position = Vector2{ x, y };
 		
 			// If we haven't revealed tile, we should just draw it as "hidden".
-			if (!tile->revealed)
+			if ( !tile->revealed )
 			{
-				DrawTextureEx(gridTex, position, 0, size / 16, WHITE);
+				DrawTextureEx( gridTex, position, 0, size / 16, WHITE );
 		
-				if (tile->state == TileState::Flagged)
-					DrawTextureEx(flagTex, position, 0, size / 16, WHITE);
+				if ( tile->state == TileState::Flagged )
+					DrawTextureEx( flagTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
 		
 				continue;
 			}
 		
 			// If we are revealed, everything should draw differently.
-			if (!tile->isMine)
+			if ( !tile->isMine )
 			{
-				DrawTextureEx(emptyTex, position, 0, size / 16, WHITE);
+				DrawTextureEx( emptyTex, position, 0, size / 16, WHITE );
 		
-				if (tile->value > 0)
+				if ( tile->value > 0 )
 				{
 					float scale = size / 1.5f;
-					std::string text = std::to_string(tile->value);
-					Vector2 strSize = MeasureTextEx(myFont, text.c_str(), scale, 0);
+					const char* text = TextFormat( "%i", tile->value );
+					Vector2 strSize = MeasureTextEx( myFont, text, scale, 0 );
 		
-					draw_string(text.c_str(), Vector2{ x + size / 2 - strSize.x / 2, y + size / 2 - strSize.y / 2 }, colors[tile->value], scale);
+					draw_string( text, Vector2{ x + size / 2 - strSize.x / 2, y + size / 2 - strSize.y / 2 }, colors[tile->value], scale );
 				}
 		
 				continue;
 			}
 		
 			// Draw mines when revealed.
-			DrawTextureEx(mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE);
+			DrawTextureEx( mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
 		}
 	}
 

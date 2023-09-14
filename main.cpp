@@ -18,7 +18,7 @@ int main()
 	while ( !WindowShouldClose() )
 	{
 		BeginDrawing();
-		ClearBackground( LIGHTGRAY );
+		ClearBackground( { 180, 180, 180 } );
 		render_state();
 		EndDrawing();
 	}

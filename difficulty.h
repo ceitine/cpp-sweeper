@@ -58,15 +58,15 @@ static Vec2I getWindowSize( Difficulty difficulty )
 	switch ( difficulty )
 	{
 	case Difficulty::Beginner:
-		return { 500, 550 };
+		return { 500, 500 };
 		break;
 
 	case Difficulty::Intermediate:
-		return { 600, 650 };
+		return { 700, 700 };
 		break;
 
 	case Difficulty::Expert:
-		return { 900, 520 };
+		return { 900, 600 };
 		break;
 
 	default:
