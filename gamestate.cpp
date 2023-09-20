@@ -14,6 +14,16 @@ static Field* field = nullptr;
 static float timer;
 static bool started;
 
+static Dropdown<Difficulty>* difficulties = new Dropdown<Difficulty> 
+{
+	new Difficulty[3]
+	{
+		Difficulty::Beginner,
+		Difficulty::Intermediate,
+		Difficulty::Expert
+	}
+};
+
 void set_state( GameState to )
 {
 	state = to;
@@ -47,12 +57,13 @@ void set_state( GameState to )
 void render_menu()
 {
 	float logoScale = 3;
-	DrawTextureEx( logoTex, {0, 0}, 0, logoScale, WHITE );
+	DrawTextureEx( logoTex, {20, 20}, 0, logoScale, WHITE );
 
 	float width = 200;
 	float height = 35;
 
-	render_button( "Start", { 20, 150, width, height }, [] { set_state( GameState::Game ); } );
+	render_button( "Start", { 40, 150, width, height }, [] { set_state( GameState::Game ); } );
+	render_dropdown<Difficulty>( { 40, 160 + height, width, height }, difficulties );
 }
 
 void render_game()

@@ -90,6 +90,20 @@ void render_button( const char* text, Rectangle rect, void (*onclick)(), int fon
 		draw_select( rect );
 }
 
+template <typename T>
+void render_dropdown( Rectangle rect, Dropdown<T>* dropdown )
+{
+	if ( dropdown == nullptr )
+		return;
+	
+	float offset = 0;
+	for ( T option : dropdown->options )
+	{
+		draw_string( TextFormat( "%s", option ), {rect.x, rect.y + offset} );
+		offset += 20;
+	}
+}
+
 void draw_background( Rectangle rect )
 {
 	DrawRectangle( rect.x, rect.y, rect.width, rect.height, UI_HIGHLIGHT );
