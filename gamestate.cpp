@@ -32,11 +32,12 @@ void set_state( GameState to )
 {
 	state = to;
 	started = false;
-	timer = 0;
 
 	// Create field and set window size according to difficulty.
 	if ( to == GameState::Game )
 	{
+		timer = 0;
+
 		Difficulty difficulty = (Difficulty)difficulties->option;
 		field = new Field( difficulty );
 
