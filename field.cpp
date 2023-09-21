@@ -72,19 +72,19 @@ public:
 			}
 		
 			// If we are revealed, everything should draw differently.
+			DrawTextureEx( emptyTex, position, 0, size / 16, WHITE );
+
 			if ( !tile->isMine )
 			{
-				DrawTextureEx( emptyTex, position, 0, size / 16, WHITE );
-		
 				if ( tile->value > 0 )
 				{
 					float scale = size / 1.5f;
 					const char* text = TextFormat( "%i", tile->value );
 					Vector2 strSize = MeasureTextEx( myFont, text, scale, 0 );
-		
+
 					draw_string( text, { x + size / 2 - strSize.x / 2, y + size / 2 - strSize.y / 2 }, colors[tile->value], (int)scale );
 				}
-		
+				
 				continue;
 			}
 		
@@ -114,7 +114,7 @@ public:
 			: TileState::Flagged;
 	}
 
-	void reveal( int x, int y )
+	void reveal( int x, int y, bool clear = false )
 	{
 		// Check if we are out of bounds.
 		if ( x >= size.x || y >= size.y
@@ -126,11 +126,11 @@ public:
 			return;
 
 		Tile* tile = tiles[index];
-		if ( tile->revealed || tile->state == TileState::Flagged )
+		if ( (tile->revealed || tile->state == TileState::Flagged) && !clear )
 			return;
 
 		// Whoops.. We lost.
-		if ( tile->isMine )
+		if ( tile->isMine && !clear )
 		{
 			set_state( GameState::Loss );
 			return;
@@ -138,10 +138,12 @@ public:
 
 		// Reveal the tile also up the count.
 		tile->revealed = true;
-		this->revealed++;
+
+		if ( !clear )
+			this->revealed++;
 
 		// Check if we have revealed everything we can.
-		if ( this->revealed == this->tiles.size() - bombCount )
+		if ( this->revealed == this->tiles.size() - bombCount && !clear )
 		{
 			set_state( GameState::Win );
 			return;

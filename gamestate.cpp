@@ -52,8 +52,14 @@ void set_state( GameState to )
 		if ( field != nullptr )
 			delete field;
 	}
-	else
+	else if ( to == GameState::Win || to == GameState::Loss )
+	{
+		for ( int y = 0; y < field->size.y; y++ )
+		for ( int x = 0; x < field->size.x; x++ )
+			field->reveal( x, y, true );
+
 		return;
+	}
 
 	// Actually assign window size.
 	SetWindowSize( window_size.x, window_size.y );
@@ -74,7 +80,7 @@ void render_menu()
 
 	render_button( "Start", { 40, 150, width, height }, [] { set_state( GameState::Game ); } );
 	render_dropdown( { 40, 160 + height, width, height }, difficulties );
-	render_button( "Exit", { 40, window_size.y - height - 40, width, height }, request_close );
+	render_button( "Exit", { 40, window_size.y - height - 40, 100, height }, request_close );
 }
 
 void render_game()
@@ -99,14 +105,17 @@ void render_game()
 	draw_background( { padding, 5, window_size.x - height - padding - 20, height + 3 } );
 	render_button( "X", { (float)window_size.x - height - padding, 5, height, height }, [] { set_state( GameState::Menu ); } );
 	
-	int minutes = (int)(timer / 60);
-	int seconds = (int)timer - minutes * 60;
-	const char* formatted = TextFormat( "%s%d:%s%d", minutes < 10 ? "0" : "", minutes, seconds < 10 ? "0" : "", seconds );
-	draw_string( "TIME:", { 15, 8 }, PINK, 25 );
-	draw_string( formatted, { 83, 8 }, WHITE, 25);
+	if ( state == GameState::Game )
+	{
+		int minutes = (int)(timer / 60);
+		int seconds = (int)timer - minutes * 60;
+		const char* formatted = TextFormat( "%s%d:%s%d", minutes < 10 ? "0" : "", minutes, seconds < 10 ? "0" : "", seconds );
+		draw_string( "TIME:", { 15, 8 }, PINK, 25 );
+		draw_string( formatted, { 83, 8 }, WHITE, 25 );
 
-	draw_string( "SCORE:", { 160, 8 }, PINK, 25 );
-	draw_string( TextFormat( "%d", field->revealed ), {245, 8}, WHITE, 25);
+		draw_string( "SCORE:", { 160, 8 }, PINK, 25 );
+		draw_string( TextFormat( "%d", field->revealed ), { 245, 8 }, WHITE, 25 );
+	}
 
 	// Lets handle our input here if we are actually in game.
 	if ( state != GameState::Game )
@@ -139,20 +148,37 @@ void render_game()
 
 void render_end( bool win = false )
 {
-	if ( state != GameState::Menu )
-		set_state( GameState::Menu );
-
-	// Shared rendering here...
 	render_game();
 	DrawRectangle( 0, 0, window_size.x, window_size.y, { 0, 0, 0, 150 } );
 
-	// Draw win screen.
-	if ( win )
-	{
-		return;
-	}
+	Color col = win
+		? GREEN
+		: RED;
 
-	// Draw loss screen.
+	const char* text = win
+		? "YOU WIN!"
+		: "YOU LOSE!";
+
+	// Show results
+	float height = 35;
+
+	int fontSize = 50;
+	Vector2 size = MeasureTextEx( myFont, text, fontSize, 0 );
+	float startY = window_size.y / 2 - (size.y + height * 2 + 40) / 2;
+	draw_string( text, { window_size.x / 2 - size.x / 2, startY }, col, fontSize );
+
+	int minutes = (int)(timer / 60);
+	int seconds = (int)timer - minutes * 60;
+	const char* formatted = TextFormat( "%s%d:%s%d", minutes < 10 ? "0" : "", minutes, seconds < 10 ? "0" : "", seconds );
+	draw_string( "TIME:", { 15, 8 }, PINK, 25 );
+	draw_string( formatted, { 83, 8 }, WHITE, 25 );
+
+	draw_string( "SCORE:", { 160, 8 }, PINK, 25 );
+	draw_string( TextFormat( "%d", field->revealed ), { 245, 8 }, WHITE, 25 );
+
+	// Buttons
+	render_button( "Retry", { window_size.x / 2 - 150.0f / 2, startY + size.y + 5, 150, height }, [] { set_state( GameState::Game ); } );
+	render_button( "Menu", { window_size.x / 2 - 100.0f / 2, startY + size.y + 20 + height, 100, height }, [] { set_state( GameState::Menu ); } );
 }
 
 void render_state()
