@@ -44,7 +44,7 @@ public:
 
 	void render( Vector2 pos, float size )
 	{
-		float bombScale = size / 16 * 0.75;
+		float bombScale = size / 16 * 0.75f;
 
 		// Go through all tiles.
 		for ( int j = 0; j < this->size.y; j++ )
@@ -58,7 +58,7 @@ public:
 			// Get position.
 			float x = pos.x + i * size;
 			float y = pos.y + j * size;
-			Vector2 position = Vector2{ x, y };
+			Vector2 position = { x, y };
 		
 			// If we haven't revealed tile, we should just draw it as "hidden".
 			if ( !tile->revealed )
@@ -66,7 +66,7 @@ public:
 				DrawTextureEx( gridTex, position, 0, size / 16, WHITE );
 		
 				if ( tile->state == TileState::Flagged )
-					DrawTextureEx( flagTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
+					DrawTextureEx( flagTex, { x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
 		
 				continue;
 			}
@@ -82,14 +82,14 @@ public:
 					const char* text = TextFormat( "%i", tile->value );
 					Vector2 strSize = MeasureTextEx( myFont, text, scale, 0 );
 		
-					draw_string( text, Vector2{ x + size / 2 - strSize.x / 2, y + size / 2 - strSize.y / 2 }, colors[tile->value], scale );
+					draw_string( text, { x + size / 2 - strSize.x / 2, y + size / 2 - strSize.y / 2 }, colors[tile->value], (int)scale );
 				}
 		
 				continue;
 			}
 		
 			// Draw mines when revealed.
-			DrawTextureEx( mineTex, Vector2{ x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
+			DrawTextureEx( mineTex, { x + size / 8, y + size / 8 }, 0, size / 16 * 0.75f, WHITE );
 		}
 	}
 

@@ -1,3 +1,6 @@
+#pragma warning( disable : 4244 ) 
+#pragma warning( disable : 4838 ) 
+
 #include "gamestate.h"
 #include "constants.h"
 #include "gui.h"
@@ -7,21 +10,22 @@
 static const int HEADER_HEIGHT = 35;
 
 static GameState state = GameState::Menu;
-static Difficulty difficulty = Difficulty::Intermediate;
 static Vec2I window_size;
 
 static Field* field = nullptr;
 static float timer;
 static bool started;
 
-static Dropdown<Difficulty>* difficulties = new Dropdown<Difficulty> 
+bool closing = false;
+
+Dropdown* difficulties = new Dropdown 
 {
-	new Difficulty[3]
+	std::vector<std::string>( 
 	{
-		Difficulty::Beginner,
-		Difficulty::Intermediate,
-		Difficulty::Expert
-	}
+		"Beginner",
+		"Intermediate",
+		"Expert"
+	} )
 };
 
 void set_state( GameState to )
@@ -33,6 +37,7 @@ void set_state( GameState to )
 	// Create field and set window size according to difficulty.
 	if ( to == GameState::Game )
 	{
+		Difficulty difficulty = (Difficulty)difficulties->option;
 		field = new Field( difficulty );
 
 		Vec2I size = getWindowSize( difficulty );
@@ -54,6 +59,11 @@ void set_state( GameState to )
 	SetWindowSize( window_size.x, window_size.y );
 }
 
+void request_close()
+{
+	closing = true;
+}
+
 void render_menu()
 {
 	float logoScale = 3;
@@ -63,7 +73,8 @@ void render_menu()
 	float height = 35;
 
 	render_button( "Start", { 40, 150, width, height }, [] { set_state( GameState::Game ); } );
-	render_dropdown<Difficulty>( { 40, 160 + height, width, height }, difficulties );
+	render_dropdown( { 40, 160 + height, width, height }, difficulties );
+	render_button( "Exit", { 40, window_size.y - height - 40, width, height }, request_close );
 }
 
 void render_game()

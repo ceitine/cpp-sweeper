@@ -6,5 +6,7 @@ enum GameState {
 	Loss
 };
 
+extern bool closing;
+
 void set_state( GameState to );
 void render_state();

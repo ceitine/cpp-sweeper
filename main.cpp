@@ -1,3 +1,4 @@
+#pragma warning( disable : 4244 ) 
 #include "raylib.h"
 #include "gui.h"
 #include "gamestate.h"
@@ -15,7 +16,7 @@ int main()
 	set_state( GameState::Menu );
 	
 	// Do rendering and updates.
-	while ( !WindowShouldClose() )
+	while ( !WindowShouldClose() && !closing )
 	{
 		BeginDrawing();
 		ClearBackground( { 180, 180, 180 } );
