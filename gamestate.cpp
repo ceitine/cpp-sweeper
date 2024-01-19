@@ -57,7 +57,7 @@ void set_state( GameState to )
 	{
 		for ( int y = 0; y < field->size.y; y++ )
 		for ( int x = 0; x < field->size.x; x++ )
-			field->reveal( x, y, true );
+			field->reveal_all();
 
 		return;
 	}

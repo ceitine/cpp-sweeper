@@ -114,7 +114,7 @@ public:
 			: TileState::Flagged;
 	}
 
-	void reveal( int x, int y, bool clear = false )
+	void reveal( int x, int y )
 	{
 		// Check if we are out of bounds.
 		if ( x >= size.x || y >= size.y
@@ -126,11 +126,11 @@ public:
 			return;
 
 		Tile* tile = tiles[index];
-		if ( (tile->revealed || tile->state == TileState::Flagged) && !clear )
+		if ( (tile->revealed || tile->state == TileState::Flagged) )
 			return;
 
 		// Whoops.. We lost.
-		if ( tile->isMine && !clear )
+		if ( tile->isMine )
 		{
 			set_state( GameState::Loss );
 			return;
@@ -138,12 +138,10 @@ public:
 
 		// Reveal the tile also up the count.
 		tile->revealed = true;
-
-		if ( !clear )
-			this->revealed++;
+		this->revealed++;
 
 		// Check if we have revealed everything we can.
-		if ( this->revealed == this->tiles.size() - bombCount && !clear )
+		if ( this->revealed == this->tiles.size() - bombCount )
 		{
 			set_state( GameState::Win );
 			return;
@@ -161,6 +159,20 @@ public:
 		}
 
 		tile->value = mines;
+	}
+
+	void reveal_all()
+	{
+		for ( int j = 0; j < this->size.y; j++ )
+		for ( int i = 0; i < this->size.x; i++ )
+		{
+			int index = getIndex(i, j);
+			Tile* tile = tiles[index];
+			if ( tile == nullptr )
+				continue;
+
+			tile->revealed = true;
+		}
 	}
 
 private:
